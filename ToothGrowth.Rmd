@@ -1,0 +1,60 @@
+---
+fontsize: 11pt
+geometry: margin=0.20in
+output:
+  pdf_document:
+    fig_height: 3
+    fig_width: 4
+    latex_engine: xelatex
+---
+
+### Analysis of ToothGrowth data
+
+A) Load the ToothGrowth data and perform some basic exploratory data analyses.
+B) Provide a basic summary of the data.
+
+```{r}
+library(datasets)
+data(ToothGrowth)
+```
+```{r, echo=FALSE}
+summary(ToothGrowth)
+```
+```{r, echo=FALSE}
+aggMean=aggregate(len~supp+dose, data=ToothGrowth, mean)
+aggSD=aggregate(len~supp+dose, data=ToothGrowth, sd)
+aggMean
+
+```
+
+C) Use confidence intervals and hypothesis tests to compare tooth growth by supp and dose.
+
+I will use a t-test to make a 95% confidence interval for the difference in tooth growth depending on supplement type. The assumption here is that this is a paired test so there is no other cause of tooth length differences other than supplement:
+
+```{r, echo=FALSE}
+suppOJ=subset(ToothGrowth, supp=="OJ")
+suppVC=subset(ToothGrowth, supp=="VC")
+t.test(suppOJ$len,suppVC$len,paired=TRUE)
+```
+Assuming the null hypothesis is that there is no difference (difference=zero), we would reject the null hypothesis in this case as the confidence interval does not include zero, p=0.00255, 95% CI: (1.41, 5.99). Orange juice appears to be a better supplement for tooth growth than vitamin C.
+
+For the dose experiment, I will do three t-tests comparing the three doses against eachother, two at a time.  Again, the assumption here is that there is no other factor involved in tooth growth except for dose, and is thus I will do a paired t-test:
+
+```{r, echo=FALSE}
+dose0.5 = subset(ToothGrowth,dose==0.5)
+dose1.0 = subset(ToothGrowth,dose==1.0)
+dose2.0 = subset(ToothGrowth,dose==2.0)
+t.test(dose1.0$len, dose0.5$len, paired=TRUE)
+t.test(dose2.0$len, dose0.5$len, paired=TRUE)
+t.test(dose2.0$len, dose1.0$len, paired=TRUE)
+```
+Here, the p-value for each test is very small, indicating a definite increase in growth with increasing dose.  The 95% confidence interval for this ranges from (12.63, 18.37) comparing dose 2.0 to 0.5 dose, to (3.47, 9.26) comparing dose  2.0 to 1.0, though they are all above the zero that would be predicted under the null hypothesis.
+
+However, the above values assume there is no interaction between supplement and dose, but a plot of the interation idicates this is not true, so this is one major limitation of considering the supplements and dose as independent variables. It appears that OJ and Vitamin C work equally well at the maximum dose, though OJ is superior at the lower doses, as shown in a side-by-side plot of the aggregated data:
+
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(data=aggMean,aes(x=as.factor(dose), y=len,fill=supp))+geom_bar(stat="identity",position=position_dodge())+theme_bw()+labs(title="Toothgrowth vs supplement and dose", x="Dose",y="Tooth Length")
+
+```
+
