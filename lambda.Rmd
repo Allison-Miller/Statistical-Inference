@@ -1,0 +1,71 @@
+---
+fontsize: 11pt
+geometry: margin=0.20in
+output:
+  pdf_document:
+    fig_height: 3
+    fig_width: 4
+    latex_engine: xelatex
+---
+
+### Exponential sampling distribution
+The exponential distribution can be simulated in R with rexp(nosim, lambda) where lambda is the rate parameter. The mean of an exponential distribution is 1/lambda and the standard deviation is also also 1/lambda. I have set lambda = 0.2 for all of the simulations. In this simulation, I will investigate the distribution of averages from 1000 simulations of 40 exponential lambda(0.2)s.
+First I will do the simulations as follows:
+```{r}
+set.seed(5)
+lambda=0.2
+n=40
+nosim=1000
+randMeans= replicate(nosim, mean(rexp(n, lambda)))
+```
+A) Show where the distribution is centered at and compare it to the theoretical center of the distribution: The center (mean) of the thoeretical distribution is 1/lambda which equals 1/0.2 0r  5 in this case.  The mean of my simulations is:
+```{r}
+mean(randMeans)
+```
+Which is very close to the theoretical mean of 5.
+
+B) Show how variable it is and compare it to the theoretical variance of the distribution:
+Since the theoretical variance of the sample distribution is sigma squared and we already know that sigma (the standard deviation) is the same as the mean, or 5, and n in this example is 40, then the theoretical  variance and standard deviation should be sigma^2/40 and sigma/sqrt(40):
+```{r, echo=FALSE}
+TheoreticalSigma=5/sqrt(40)
+TheoreticalVariance=5^2/(40)
+TheoreticalVariance
+TheoreticalSigma
+```
+The actual sampling distribution variance and standard deviation is:
+```{r, echo=FALSE}
+var(randMeans)
+sd(randMeans)
+```
+They are both pretty close to the expected values.
+
+C) Show that the distribution is approximately normal:
+I think the best way to show normalcy is to plot the thoeretical quantiles against the quantiles in my sample, showing the theoretically perfect normal distribution as a line:
+```{r fig.height=3, fig.width=3}
+qqnorm(randMeans)
+qqline(randMeans)
+```
+
+Though it is not a perfect fit, it does appear to be "approximately" normal, with a bit of skewing in both tails.  We would probably see it approach near perfect normalcy if we chose a much larger sample size (larger than 40).
+
+D) Evaluate the coverage of the confidence interval for 1/lambda: X+/- 1.96* S/sqrt(n)
+
+The coverage for the confidence intervals for each of the individual 1000 simulations is:
+```{r}
+set.seed(5)
+randSamples=replicate(nosim, rexp(n,lambda))
+means=apply(randSamples, 2, mean)
+SD=apply(randSamples, 2, sd)
+ul=means+1.96*(SD/sqrt(n))
+ll=means-1.96*(SD/sqrt(n))
+mean(ll < 1/lambda & ul > 1/lambda)
+```
+So these 1000 intervals only include the true population mean (of 5) 92.8 percent of the time instead of 95 percent.  Again, increasing the size of the samples would improve this coverage.  Also, since these numbers are randomly generated, running the simulation again (without setting the seed) would no doubt give a different percent coverage of the true mean.
+
+We can also work out a conifdence interval for the sampling distribution of these means as follows:
+
+```{r}
+mean(randMeans) +c(-1,1)*qnorm(0.975)*(5/sqrt(40))
+```
+So the 95% confidence interval of the means covers the interval (3.49,6.59), which includes the known population mean of 5.  This interval was calculated using the known standard deviation of the distribution. 
+
