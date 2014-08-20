@@ -9,7 +9,7 @@ output:
 ---
 
 ### Exponential sampling distribution
-The exponential distribution can be simulated in R with rexp(nosim, lambda) where lambda is the rate parameter. The mean of an exponential distribution is 1/lambda and the standard deviation is also also 1/lambda. I have set lambda = 0.2 for all of the simulations. In this simulation, I will investigate the distribution of averages from 1000 simulations of 40 exponential lambda(0.2)s.
+The exponential distribution can be simulated in R with rexp(nosim, lambda) where lambda ($\lambda$) is the rate parameter. The mean of an exponential distribution is $\frac{1}{\lambda}$ and the standard deviation is also also $\frac{1}{\lambda}$. I have set lambda = 0.2 for all of the simulations. In this simulation, I will investigate the distribution of averages from 1000 simulations of 40 exponential lambda(0.2)s.
 First I will do the simulations as follows:
 ```{r}
 set.seed(5)
@@ -18,14 +18,14 @@ n=40
 nosim=1000
 randMeans= replicate(nosim, mean(rexp(n, lambda)))
 ```
-A) Show where the distribution is centered at and compare it to the theoretical center of the distribution: The center (mean) of the thoeretical distribution is 1/lambda which equals 1/0.2 0r  5 in this case.  The mean of my simulations is:
+A) Show where the distribution is centered at and compare it to the theoretical center of the distribution: The center (mean) of the thoeretical distribution is $\frac{1}{\lambda}$ which equals 1/0.2 0r  5 in this case.  The mean of my simulations is:
 ```{r}
 mean(randMeans)
 ```
 Which is very close to the theoretical mean of 5.
 
 B) Show how variable it is and compare it to the theoretical variance of the distribution:
-Since the theoretical variance of the sample distribution is sigma squared and we already know that sigma (the standard deviation) is the same as the mean, or 5, and n in this example is 40, then the theoretical  variance and standard deviation should be sigma^2/40 and sigma/sqrt(40):
+Since the theoretical variance of the sample distribution is $\sigma^2$ and we already know that $\sigma$ (the standard deviation) is the same as the mean, or 5, and n in this example is 40, then the theoretical  variance and standard deviation should be $\frac{\sigma^2}{40}$ and $\frac{\sigma}{\sqrt{40}}$:
 ```{r, echo=FALSE}
 TheoreticalSigma=5/sqrt(40)
 TheoreticalVariance=5^2/(40)
@@ -48,7 +48,7 @@ qqline(randMeans)
 
 Though it is not a perfect fit, it does appear to be "approximately" normal, with a bit of skewing in both tails.  We would probably see it approach near perfect normalcy if we chose a much larger sample size (larger than 40).
 
-D) Evaluate the coverage of the confidence interval for 1/lambda: X+/- 1.96* S/sqrt(n)
+D) Evaluate the coverage of the confidence interval for $\frac{1}{\lambda}$: $\bar{X}\pm 1.96* \frac{S}{\sqrt(n)}$
 
 The coverage for the confidence intervals for each of the individual 1000 simulations is:
 ```{r}
@@ -68,4 +68,6 @@ We can also work out a conifdence interval for the sampling distribution of thes
 mean(randMeans) +c(-1,1)*qnorm(0.975)*(5/sqrt(40))
 ```
 So the 95% confidence interval of the means covers the interval (3.49,6.59), which includes the known population mean of 5.  This interval was calculated using the known standard deviation of the distribution. 
+
+The full code of this report is available at https://github.com/Allison-Miller/Statistical-Inference/blob/master/lambda.Rmd
 
