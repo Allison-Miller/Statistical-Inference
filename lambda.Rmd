@@ -43,18 +43,22 @@ C) Show that the distribution is approximately normal:
 I think the best way to show normalcy is to plot both a histogram of the means and the thoeretical quantiles against the quantiles in my sample (qqnorm), showing the theoretically perfect normal distribution as a line:
 ```{r fig.height=4, fig.width=8}
 par(mfrow=c(1,2))
-hist(randMeans, breaks=20)
-qqnorm(randMeans)
-qqline(randMeans,col="red")
+hist(randMeans, prob = TRUE, main = "Simulated Means", xlab = "mean", breaks=20)
+curve(dnorm(x, mean=5, sd=sd(randMeans)), add=TRUE, col="red", lwd=3)
+abline(v = 5, col="Blue", lwd=2)
+qqnorm(randMeans, ylim=c(2,8))
+qqline(randMeans,col="red", lwd=2)
+abline(h=5, col="blue", lwd=2)
+abline(v=0, col="blue", lwd=2)
 ```
-Both plots appear to be "apporximately" normal and centered around the true mean of 5, though the qqplot is not a perfect fit. It does appear to have a bit of skewing in both tails.  We would probably see it approach near perfect normalcy if we chose a much larger sample size (larger than 40).
+Both plots appear to be pretty normal and centered around the true mean of 5, though the qqplot is not a perfect fit. It does appear to have a bit of skewing in both tails.  We would probably see it approach near perfect normalcy if we chose a much larger sample size (larger than 40).
 
 D) Evaluate the coverage of the confidence interval for $\frac{1}{\lambda}$: $\bar{X}\pm 1.96* \frac{S}{\sqrt(n)}$
 
 The coverage for the confidence intervals for each of the individual 1000 simulations is:
 ```{r}
 set.seed(5)
-randSamples=replicate(nosim, rexp(nosim,lambda))
+randSamples=replicate(nosim, rexp(n,lambda))
 means=apply(randSamples, 2, mean)
 SD=apply(randSamples, 2, sd)
 ul=means+1.96*(SD/sqrt(n))
